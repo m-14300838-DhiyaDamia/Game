@@ -1158,12 +1158,14 @@
 
             // Drop Water Payload midway
             setTimeout(() => {
-                waterBombs.push({
-                    x: canvas.width * 0.45,
-                    y: planeY + 15,
-                    vy: 3,
-                    radius: 12
-                });
+               
+waterBombs.push({
+    x: canvas.width * 0.45,
+    y: planeY + 15,
+    vy: 1,
+    radius: 12
+});
+
                 playSound('waterDrop');
             }, 600);
         }
