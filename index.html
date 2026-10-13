@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ms">
+    
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,6 +13,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <script>
+        
         tailwind.config = {
             theme: {
                 extend: {
@@ -1929,6 +1931,25 @@
         window.onload = function() {
             showScreen('screenA');
         };
+
+         // Background music pada volum maksimum
+    bgMusic.volume = 1.0;
+
+    musicButton.addEventListener("click", async function () {
+        if (bgMusic.paused) {
+            try {
+                await bgMusic.play();
+                musicButton.textContent = "🔊 Music ON";
+            } catch (error) {
+                console.error("Music failed to play:", error);
+                musicButton.textContent = "▶ Try Play Music";
+            }
+        } else {
+            bgMusic.pause();
+            musicButton.textContent = "🔇 Music OFF";
+        }
+    });
     </script>
+    
 </body>
 </html>
