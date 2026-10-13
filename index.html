@@ -12,6 +12,19 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     
+<!-- Background Music -->
+<audio id="bgMusic" loop preload="auto">
+    <source src="./jerebu.mp3" type="audio/mpeg">
+</audio>
+
+<!-- Music Control Button -->
+<button id="musicButton" type="button"
+    style="position:fixed;top:15px;right:15px;z-index:99999;
+    padding:10px 16px;border:0;border-radius:10px;
+    background:#123c55;color:white;cursor:pointer;">
+    🎵 Play Music
+</button>
+
     <script>
         
         tailwind.config = {
@@ -1932,8 +1945,27 @@
             showScreen('screenA');
         };
 
-         // Background music pada volum maksimum
-    bgMusic.volume = 1.0;
+         const bgMusic = document.getElementById("bgMusic");
+const musicButton = document.getElementById("musicButton");
+
+// Background music pada volum maksimum
+bgMusic.volume = 1.0;
+
+// Music ON / OFF
+musicButton.addEventListener("click", async function () {
+    if (bgMusic.paused) {
+        try {
+            await bgMusic.play();
+            musicButton.textContent = "🔊 Music ON";
+        } catch (error) {
+            console.error("Music failed to play:", error);
+            musicButton.textContent = "▶ Try Play Music";
+        }
+    } else {
+        bgMusic.pause();
+        musicButton.textContent = "🎵 Play Music";
+    }
+});
 
     musicButton.addEventListener("click", async function () {
         if (bgMusic.paused) {
@@ -1950,8 +1982,6 @@
         }
     });
     </script>
-    <audio id="bgMusic" loop preload="auto">
-    <source src="./jerebu.mp3" type="audio/mpeg">
-</audio>
+
 </body>
 </html>
