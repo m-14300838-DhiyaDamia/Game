@@ -151,16 +151,16 @@
                     <span id="hudScore" class="font-black text-emerald-400">0 / 30</span>
                 </div>
 
-               <!-- Music Toggle -->
+               
+                <!-- Background Music Toggle -->
 <button id="musicButton" type="button"
     class="h-9 px-3 rounded-xl bg-slate-800 hover:bg-slate-700
     flex items-center justify-center gap-2 text-slate-300
-    transition-colors border border-slate-700 text-xs font-bold
-    whitespace-nowrap">
+    border border-slate-700 text-xs font-bold whitespace-nowrap">
     <i class="fa-solid fa-music"></i>
-    <span>Play Music</span>
+    <span>Music ON</span>
 </button>
-
+                
 <!-- Sound Effects Toggle -->
 <button id="btnSoundToggle" onclick="toggleAudio()"
     class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700
@@ -169,7 +169,9 @@
     <i id="soundIcon" class="fa-solid fa-volume-high"></i>
 </button>
             </div>
+            
         </div>
+        
     </header>
 
     <!-- Main Content Area -->
@@ -1953,46 +1955,47 @@
             showScreen('screenA');
         };
 
-         
-
-  // Background Music Control
+    
+// Background Music Control
 const bgMusic = document.getElementById("bgMusic");
 const musicButton = document.getElementById("musicButton");
 
 bgMusic.volume = 1.0;
 
+function updateMusicButton() {
+    const label = musicButton.querySelector("span");
+
+    if (bgMusic.paused) {
+        label.textContent = "Music OFF";
+    } else {
+        label.textContent = "Music ON";
+    }
+}
+
+bgMusic.addEventListener("playing", updateMusicButton);
+bgMusic.addEventListener("pause", updateMusicButton);
+
 bgMusic.addEventListener("error", function () {
-    console.error(
-        "Audio error:",
-        bgMusic.error ? bgMusic.error.code : "Unknown error"
-    );
-    musicButton.textContent = "❌ Audio Error";
-});
-
-bgMusic.addEventListener("playing", function () {
-    musicButton.textContent = "🔊 Music ON";
-});
-
-bgMusic.addEventListener("pause", function () {
-    musicButton.textContent = "🎵 Play Music";
+    console.error("Audio gagal dimuatkan:", bgMusic.error);
 });
 
 musicButton.addEventListener("click", async function () {
     if (bgMusic.paused) {
         try {
-            bgMusic.currentTime = 0;
             await bgMusic.play();
         } catch (error) {
-            console.error("Music playback failed:", error);
-            musicButton.textContent = "▶ Try Play Music";
-            alert(
-                "Muzik gagal dimainkan. Sila tekan F12, buka Console, " +
-                "dan semak mesej ralat."
-            );
+            console.error("Muzik gagal dimainkan:", error);
         }
     } else {
         bgMusic.pause();
     }
+
+    updateMusicButton();
+});
+
+// Cuba mainkan muzik secara automatik
+bgMusic.play().catch(function () {
+    updateMusicButton();
 });
     </script>
 
