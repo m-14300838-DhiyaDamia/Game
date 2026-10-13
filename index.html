@@ -112,8 +112,9 @@
 </head>
 <body class="min-h-screen flex flex-col justify-between antialiased selection:bg-emerald-500 selection:text-white">
 <!-- Background Music -->
-<audio id="bgMusic" loop preload="auto">
+<audio id="bgMusic" preload="auto" loop>
     <source src="jerebu.mp3" type="audio/mpeg">
+    Browser anda tidak menyokong audio.
 </audio>
 
 <!-- Music Control Button -->
@@ -1947,23 +1948,43 @@
 
          
 
-   const bgMusic = document.getElementById("bgMusic");
+  // Background Music Control
+const bgMusic = document.getElementById("bgMusic");
 const musicButton = document.getElementById("musicButton");
 
 bgMusic.volume = 1.0;
 
+bgMusic.addEventListener("error", function () {
+    console.error(
+        "Audio error:",
+        bgMusic.error ? bgMusic.error.code : "Unknown error"
+    );
+    musicButton.textContent = "❌ Audio Error";
+});
+
+bgMusic.addEventListener("playing", function () {
+    musicButton.textContent = "🔊 Music ON";
+});
+
+bgMusic.addEventListener("pause", function () {
+    musicButton.textContent = "🎵 Play Music";
+});
+
 musicButton.addEventListener("click", async function () {
     if (bgMusic.paused) {
         try {
+            bgMusic.currentTime = 0;
             await bgMusic.play();
-            musicButton.textContent = "🔊 Music ON";
         } catch (error) {
-            console.error("Music failed to play:", error);
+            console.error("Music playback failed:", error);
             musicButton.textContent = "▶ Try Play Music";
+            alert(
+                "Muzik gagal dimainkan. Sila tekan F12, buka Console, " +
+                "dan semak mesej ralat."
+            );
         }
     } else {
         bgMusic.pause();
-        musicButton.textContent = "🎵 Play Music";
     }
 });
     </script>
