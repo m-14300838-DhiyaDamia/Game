@@ -117,13 +117,7 @@
     Browser anda tidak menyokong audio.
 </audio>
 
-<!-- Music Control Button -->
-<button id="musicButton" type="button"
-    style="position:fixed;top:15px;right:15px;z-index:99999;
-    padding:10px 16px;border:0;border-radius:10px;
-    background:#123c55;color:white;cursor:pointer;">
-    🎵 Play Music
-</button>
+
     <!-- Top Navigation HUD -->
     <header class="w-full bg-slate-950/90 border-b border-slate-800 sticky top-0 z-50 backdrop-blur-md px-4 py-3">
         <div class="max-w-7xl mx-auto flex items-center justify-between">
@@ -157,10 +151,23 @@
                     <span id="hudScore" class="font-black text-emerald-400">0 / 30</span>
                 </div>
 
-                <!-- Sound Toggle -->
-                <button id="btnSoundToggle" onclick="toggleAudio()" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-300 transition-colors border border-slate-700">
-                    <i id="soundIcon" class="fa-solid fa-volume-high"></i>
-                </button>
+               <!-- Music Toggle -->
+<button id="musicButton" type="button"
+    class="h-9 px-3 rounded-xl bg-slate-800 hover:bg-slate-700
+    flex items-center justify-center gap-2 text-slate-300
+    transition-colors border border-slate-700 text-xs font-bold
+    whitespace-nowrap">
+    <i class="fa-solid fa-music"></i>
+    <span>Play Music</span>
+</button>
+
+<!-- Sound Effects Toggle -->
+<button id="btnSoundToggle" onclick="toggleAudio()"
+    class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700
+    flex items-center justify-center text-slate-300
+    transition-colors border border-slate-700">
+    <i id="soundIcon" class="fa-solid fa-volume-high"></i>
+</button>
             </div>
         </div>
     </header>
