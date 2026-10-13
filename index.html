@@ -1967,24 +1967,19 @@ const bgMusic = document.getElementById("bgMusic");
 const musicButton = document.getElementById("musicButton");
 
 bgMusic.volume = 1.0;
+bgMusic.loop = true;
 
 function updateMusicButton() {
     const label = musicButton.querySelector("span");
 
-    if (bgMusic.paused) {
-        label.textContent = "Music OFF";
-    } else {
-        label.textContent = "Music ON";
+    if (label) {
+        label.textContent = bgMusic.paused
+            ? "Music OFF"
+            : "Music ON";
     }
 }
 
-bgMusic.addEventListener("playing", updateMusicButton);
-bgMusic.addEventListener("pause", updateMusicButton);
-
-bgMusic.addEventListener("error", function () {
-    console.error("Audio gagal dimuatkan:", bgMusic.error);
-});
-
+// Butang untuk hidupkan atau matikan muzik
 musicButton.addEventListener("click", async function () {
     if (bgMusic.paused) {
         try {
@@ -1999,9 +1994,37 @@ musicButton.addEventListener("click", async function () {
     updateMusicButton();
 });
 
+bgMusic.addEventListener("playing", updateMusicButton);
+bgMusic.addEventListener("pause", updateMusicButton);
+
 // Cuba mainkan muzik secara automatik
-bgMusic.play().catch(function () {
+bgMusic.play().catch(function (error) {
+    console.log("Autoplay disekat oleh browser:", error);
     updateMusicButton();
+
+    // Jika autoplay disekat, cuba selepas pengguna
+    // berinteraksi dengan halaman selain butang muzik
+    function startMusicOnInteraction(event) {
+        if (event.target.closest("#musicButton")) {
+            return;
+        }
+
+        bgMusic.play()
+            .then(updateMusicButton)
+            .catch(function (err) {
+                console.error("Muzik gagal dimainkan:", err);
+            });
+
+        document.removeEventListener(
+            "pointerdown",
+            startMusicOnInteraction
+        );
+    }
+
+    document.addEventListener(
+        "pointerdown",
+        startMusicOnInteraction
+    );
 });
     </script>
 
