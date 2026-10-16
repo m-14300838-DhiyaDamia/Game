@@ -34,11 +34,12 @@ table{border-collapse:collapse;min-width:min(520px,92vw);background:#0008;border
 input{font-size:16px;padding:9px 14px;border-radius:30px;border:1px solid #00e5ff;background:#0a1230;color:#fff;margin-right:8px}
 html,body{touch-action:none;user-select:none;-webkit-user-select:none}.scr{touch-action:pan-y}
 .tc{display:none}
-@media(hover:none) and (pointer:coarse){#joy,#fire,#pbtn{display:block}#help{display:none}}
+@media(hover:none) and (pointer:coarse){#joy,#fire,#pbtn,#boost{display:block}#help{display:none}}
 #joy{position:fixed;left:calc(22px + env(safe-area-inset-left,0px));bottom:calc(24px + env(safe-area-inset-bottom,0px));width:130px;height:130px;border-radius:50%;background:#ffffff1a;border:2px solid #00e5ff88;z-index:6;touch-action:none}
 #knob{position:absolute;left:35px;top:35px;width:60px;height:60px;border-radius:50%;background:#00e5ffaa;box-shadow:0 0 14px #00e5ff;pointer-events:none}
 #fire{position:fixed;right:24px;bottom:calc(70px + env(safe-area-inset-bottom,0px));z-index:6;width:84px;height:84px;border-radius:50%;padding:0;font-size:34px;touch-action:none}
 #pbtn{position:fixed;left:50%;margin-left:-24px;width:48px;padding:6px 0;bottom:14px;z-index:6;font-size:16px}
+#boost{position:fixed;right:124px;bottom:calc(46px + env(safe-area-inset-bottom,0px));z-index:6;width:64px;height:64px;border-radius:50%;padding:0;font-size:28px;touch-action:none;background:linear-gradient(90deg,#ff9100,#ff4081)}
 #rot{display:none;color:#ffd740}
 @media(orientation:portrait){#rot{display:block}}
 @media(max-width:700px){#opts{top:100px;width:56vw}#stats{top:100px;font-size:12px;padding:6px 8px}#stats .big{font-size:18px}.o{padding:4px 6px;font-size:11px}#q{font-size:13px;padding:7px 10px}}
@@ -49,9 +50,9 @@ html,body{touch-action:none;user-select:none;-webkit-user-select:none}.scr{touch
 <div id="opts" class="hud"></div>
 <div id="stats" class="hud"></div>
 <div id="toast" class="hud"></div>
-<div id="help" class="hud">W/A/S/D atau ↑↓←→ = gerak · SPACE = tembak laser · P = jeda · Langgar bulatan jawapan yang BETUL!</div>
+<div id="help" class="hud">W/A/S/D atau ↑↓←→ = gerak · SPACE = tembak laser · SHIFT = laju · P = jeda · Langgar bulatan jawapan yang BETUL!</div>
 <div id="flash"></div><div id="warn"></div>
-<div id="joy" class="tc"><div id="knob"></div></div><button id="fire" class="tc">🔫</button><button id="pbtn" class="tc">⏸</button>
+<div id="joy" class="tc"><div id="knob"></div></div><button id="fire" class="tc">🔫</button><button id="boost" class="tc">⚡</button><button id="pbtn" class="tc">⏸</button>
 <button id="mute">🔊</button>
 
 <div id="menu" class="scr">
@@ -106,7 +107,7 @@ const BANK=[
 ["Which task is part of routine maintenance by a DBA?","Security audits","Drawing the initial ERD only","Defining project scope only","Preparing the original feasibility report only"]];
 const $=s=>document.querySelector(s);
 const shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
-const COL=[0xff5252,0x40c4ff,0xffd740,0x69f0ae],CSS=['#ff5252','#40c4ff','#ffd740','#69f0ae'],LET='ABCD';
+const COL=[0xe53935,0x2979ff,0xffa000,0x00c853],CSS=['#e53935','#2979ff','#ffa000','#00c853'],LET='ABCD';
 const POS=[[-6,4],[6,4],[-6,-4],[6,-4]];
 const TOTAL=30,RQ=10;
 
@@ -218,12 +219,12 @@ function nextQ(){
  G.rb=0;G.qi++;if(G.qi>=TOTAL)return finish();if(G.qi%RQ===0)toast('🏁 PUSINGAN '+(G.qi/RQ+1),'#00e5ff');
  const q=G.qs[G.qi];$('#q').textContent=`P${(G.qi/RQ|0)+1} · ${G.qi+1}/${TOTAL} · ${q.q}`;
  $('#opts').innerHTML=q.o.map((t,i)=>`<div class="o" style="border-color:${CSS[i]}"><b style="color:${CSS[i]}">${LET[i]}</b><span>${t}</span></div>`).join('');
- q.o.forEach((t,i)=>{const g=new THREE.Group(),ring=new THREE.Mesh(new THREE.TorusGeometry(2.4,.25,12,32),new THREE.MeshBasicMaterial({color:COL[i]}));
-  const orb=new THREE.Mesh(new THREE.SphereGeometry(1.6,16,16),new THREE.MeshBasicMaterial({color:COL[i],transparent:true,opacity:.3}));
-  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:texs[i]}));sp.scale.set(2.6,2.6,1);g.add(ring,orb,sp,glow(COL[i],9));g.position.set(POS[i][0],POS[i][1],-150);S.add(g);gates.push({m:g,ring,i,dead:false})});
+ q.o.forEach((t,i)=>{const g=new THREE.Group(),ring=new THREE.Mesh(new THREE.TorusGeometry(2.4,.4,12,32),new THREE.MeshBasicMaterial({color:COL[i]}));
+  const orb=new THREE.Mesh(new THREE.SphereGeometry(1.6,16,16),new THREE.MeshBasicMaterial({color:COL[i],transparent:true,opacity:.55}));
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:texs[i]}));sp.scale.set(2.6,2.6,1);g.add(ring,orb,sp,glow(COL[i],7));g.position.set(POS[i][0],POS[i][1],-150);S.add(g);gates.push({m:g,ring,i,dead:false})});
  if(Math.random()<.8){const ty=['gun','gun','shield','star','heart'][Math.random()*5|0],cl={gun:0xff9100,shield:0x40c4ff,star:0xffeb3b,heart:0xff4081}[ty];
   const m=new THREE.Mesh(new THREE.OctahedronGeometry(1),new THREE.MeshBasicMaterial({color:cl}));m.position.set((Math.random()-.5)*16,(Math.random()-.5)*10,-95);S.add(m);items.push({m,ty})}
- G.ans=false;G.t0=performance.now();G.speed=10+(G.qi/RQ|0)*2+(G.qi%RQ)*.2;
+ G.ans=false;G.t0=performance.now();G.base=G.speed=10+(G.qi/RQ|0)*2+(G.qi%RQ)*.2;
 }
 function roundScreen(){const r=(G.qi+1)/RQ|0,n=r+1,nm=['','Hujan lebat 🌧️ — kawalan lebih licin','RIBUT PETIR ⚡ — elak garisan merah!'];
  $('#rt').textContent=`PUSINGAN ${r} SELESAI ✅`;
@@ -251,6 +252,7 @@ function loop(now){requestAnimationFrame(loop);let dt=Math.min(.05,(now-last)/10
  clouds.forEach(c=>{c.position.z+=(G&&running&&!paused?G.speed:8)*dt*.8;if(c.position.z>40){c.position.z=-220;c.position.x=(Math.random()-.5)*160;if(Math.abs(c.position.x)<18)c.position.x+=40}});
  if(!G||!running||paused){idle(dt);R.render(S,cam);return}
  const lv=Math.min(2,Math.max(0,G.qi/RQ|0));
+ G.bm=(G.bm||1)+(((keys.shift||keys.b)?3:1)-(G.bm||1))*Math.min(1,4*dt);G.speed=(G.base||10)*G.bm;
  // sky
  const sk=[0x6fb7ff,0x56657a,0x1b1f33][lv];S.background.lerp(new THREE.Color(sk),.02);S.fog.color.copy(S.background);
  skyU.top.value.lerp(new THREE.Color([0x1565c0,0x2b3445,0x080a18][lv]),.02);skyU.bot.value.copy(S.background);stars.material.opacity+=([0,.3,1][lv]-stars.material.opacity)*.02;sunS.material.opacity+=([1,.3,0][lv]-sunS.material.opacity)*.02;sea.material.color.lerp(new THREE.Color([0x0b3d91,0x1c2e45,0x070d1c][lv]),.02);landM.color.lerp(new THREE.Color([0xffffff,0xa8b4c0,0x4a5568][lv]),.02);S.fog.far=[170,120,90][lv];rain.visible=lv>=1;
@@ -307,6 +309,7 @@ function sendSheet(){const st=$('#sst');if(!SHEET_URL){st.textContent='⚠️ Go
  st.textContent='⏳ Menghantar keputusan...';
  fetch(SHEET_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({nama:P.n,matrik:P.m,markah:G.score,betul:G.ok,jumlah:G.qi<TOTAL?G.qi+1:TOTAL,peratus:G.pct,masa:new Date().toISOString()})}).then(()=>st.textContent='✅ Keputusan telah dihantar kepada pensyarah.').catch(()=>{st.textContent='❌ Gagal hantar. Semak internet dan cuba semula.';$('#rsend').classList.remove('hide')})}
 $('#rsend').onclick=()=>{$('#rsend').classList.add('hide');sendSheet()};
+const bb=$('#boost');bb.addEventListener('pointerdown',()=>keys['b']=true);['pointerup','pointercancel','pointerleave'].forEach(t=>bb.addEventListener(t,()=>keys['b']=false));
 $('#again').onclick=newGame;
 // ====== KAWALAN SENTUH (telefon): joystick + butang tembak + jeda ======
 let jx=0,jy=0,jid=null;const joy=$('#joy'),kn=$('#knob');
