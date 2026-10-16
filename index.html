@@ -52,6 +52,7 @@ html,body{touch-action:none;user-select:none;-webkit-user-select:none}.scr{touch
 #mute{right:calc(220px + env(safe-area-inset-right,0px));bottom:calc(30px + env(safe-area-inset-bottom,0px));width:38px;height:38px;border-radius:50%;padding:0}
 }
 @media(max-height:480px){#joy{width:110px;height:110px;bottom:calc(14px + env(safe-area-inset-bottom,0px))}#knob{left:25px;top:25px}}
+select{font-size:16px;padding:9px 14px;border-radius:30px;border:1px solid #00e5ff;background:#0a1230;color:#fff;margin-right:8px}select option{background:#0a1230;color:#fff}
 </style></head><body>
 <div id="top" class="hud"><div id="q">…</div><div id="bar"><i></i></div></div>
 <div id="opts" class="hud"></div>
@@ -64,10 +65,11 @@ html,body{touch-action:none;user-select:none;-webkit-user-select:none}.scr{touch
 
 <div id="menu" class="scr">
 <h1>SKY QUIZ</h1>
+<div style="font-size:clamp(15px,2.8vw,24px);font-style:italic;color:#ffd740;max-width:720px;text-shadow:0 0 12px #000">Wahh...Syukur..jerebu sudah tiada, boleh lah kita jalan-jalan di udara...</div>
 <div style="font-size:clamp(14px,2.5vw,22px);letter-spacing:2px;color:#00e5ff">DAT20103 · TOPIC 3: DATABASE LIFE CYCLE</div>
 <p>Terbangkan pesawat dan langgar cincin jawapan yang betul. Kutip 🔫 senjata, 🛡️ perisai, ⭐ bonus &amp; ❤️ nyawa. Hati-hati hujan 🌧️ dan petir ⚡ — elak garisan merah!</p>
 <p style="font-size:13px">3 pusingan × 10 soalan (semua 30 soalan keluar sekali, susunan soalan &amp; jawapan diacak). Setiap pusingan lebih sukar!</p>
-<p id="rot">📱 Disyorkan: putar telefon ke mod <b>landscape</b> untuk pengalaman terbaik.</p><div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><input id="sn" maxlength="40" placeholder="Nama penuh" autocomplete="off"><input id="sm" maxlength="14" placeholder="No. Matriks" autocomplete="off"></div><p id="err" style="color:#ff5252;min-height:1em"></p>
+<p id="rot">📱 Disyorkan: putar telefon ke mod <b>landscape</b> untuk pengalaman terbaik.</p><div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><input id="sn" maxlength="40" placeholder="Nama penuh" autocomplete="off"><input id="sm" maxlength="14" placeholder="No. Matriks" autocomplete="off"><select id="ss"><option value="">Pilih Seksyen</option><option value="Sec 1">Sec 1</option><option value="Sec 2">Sec 2</option><option value="Sec 3">Sec 3</option><option value="Sec 4">Sec 4</option><option value="Sec 5">Sec 5</option><option value="Sec 6">Sec 6</option></select></div><p id="err" style="color:#ff5252;min-height:1em"></p>
 <button id="go">🚀 MULA TERBANG</button><button id="lbBtn" style="background:linear-gradient(90deg,#b388ff,#ff4081);color:#fff">🏆 Papan Markah</button></div>
 <div id="lb" class="scr hide"><h1>🏆 PAPAN MARKAH</h1><div id="lbt"></div><button id="lbBack">Kembali</button></div>
 
@@ -353,11 +355,11 @@ $('#rn').onclick=()=>{$('#rnd').classList.add('hide');G.lives=Math.min(5,G.lives
 // ====== DATA PELAJAR + GOOGLE SHEET ======
 const SHEET_URL='https://script.google.com/macros/s/AKfycbw-_vNWIIo_f4F-w35_Bq5vRSYXeK7Z0W1XMKOjzMtVYBZqRkwbP8Acqj2l4C1vCWerPQ/exec';// <-- TAMPAL URL GOOGLE APPS SCRIPT (Web app) DI SINI
 let P=null;
-$('#go').onclick=()=>{const n=$('#sn').value.trim(),m=$('#sm').value.trim().toUpperCase();if(n.length<3||m.length<4){$('#err').textContent='Sila masukkan nama penuh dan no. matriks.';return}$('#err').textContent='';P={n,m};newGame()};
+$('#go').onclick=()=>{const n=$('#sn').value.trim(),m=$('#sm').value.trim().toUpperCase();const sc=$('#ss').value;if(n.length<3||m.length<4||!sc){$('#err').textContent='Sila masukkan nama penuh, no. matriks dan pilih seksyen.';return}$('#err').textContent='';P={n,m,s:sc};newGame()};
 function saveScore(){if(G.sent)return;G.sent=1;const r={n:P?P.n:'Pemain',s:G.score,p:G.pct,d:new Date().toLocaleDateString('ms-MY')};LB.push(r);LB.sort((a,b)=>b.s-a.s);LB=LB.slice(0,10);try{localStorage.setItem('skyquiz_lb',JSON.stringify(LB))}catch(e){}$('#lbe').innerHTML=lbHtml(r);sendSheet()}
 function sendSheet(){const st=$('#sst');if(!SHEET_URL){st.textContent='⚠️ Google Sheet belum disambung (SHEET_URL kosong).';return}
  st.textContent='⏳ Menghantar keputusan...';
- fetch(SHEET_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({nama:P.n,matrik:P.m,markah:G.score,betul:G.ok,jumlah:G.qi<TOTAL?G.qi+1:TOTAL,peratus:G.pct,masa:new Date().toISOString()})}).then(()=>st.textContent='✅ Keputusan telah dihantar kepada pensyarah.').catch(()=>{st.textContent='❌ Gagal hantar. Semak internet dan cuba semula.';$('#rsend').classList.remove('hide')})}
+ fetch(SHEET_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({nama:P.n,matrik:P.m,seksyen:P.s,markah:G.score,betul:G.ok,jumlah:G.qi<TOTAL?G.qi+1:TOTAL,peratus:G.pct,masa:new Date().toISOString()})}).then(()=>st.textContent='✅ Keputusan telah dihantar kepada pensyarah.').catch(()=>{st.textContent='❌ Gagal hantar. Semak internet dan cuba semula.';$('#rsend').classList.remove('hide')})}
 $('#rsend').onclick=()=>{$('#rsend').classList.add('hide');sendSheet()};
 const bb=$('#boost');bb.addEventListener('pointerdown',()=>keys['b']=true);['pointerup','pointercancel','pointerleave'].forEach(t=>bb.addEventListener(t,()=>keys['b']=false));
 $('#again').onclick=newGame;
