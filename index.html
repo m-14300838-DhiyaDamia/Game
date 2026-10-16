@@ -70,6 +70,7 @@ select{font-size:16px;padding:9px 14px;border-radius:30px;border:1px solid #00e5
 <p>Terbangkan pesawat dan langgar cincin jawapan yang betul. Kutip 🔫 senjata, 🛡️ perisai, ⭐ bonus &amp; ❤️ nyawa. Hati-hati hujan 🌧️ dan petir ⚡ — elak garisan merah!</p>
 <p style="font-size:13px">3 pusingan × 10 soalan (semua 30 soalan keluar sekali, susunan soalan &amp; jawapan diacak). Setiap pusingan lebih sukar!</p>
 <p id="rot">📱 Disyorkan: putar telefon ke mod <b>landscape</b> untuk pengalaman terbaik.</p><div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><input id="sn" maxlength="40" placeholder="Nama penuh" autocomplete="off"><input id="sm" maxlength="14" placeholder="No. Matriks" autocomplete="off"><select id="ss"><option value="">Pilih Seksyen</option><option value="Sec 1">Sec 1</option><option value="Sec 2">Sec 2</option><option value="Sec 3">Sec 3</option><option value="Sec 4">Sec 4</option><option value="Sec 5">Sec 5</option><option value="Sec 6">Sec 6</option></select></div><p id="err" style="color:#ff5252;min-height:1em"></p>
+<div style="opacity:.45;font-size:11px">Versi 5 · papan markah dari Google Sheet</div>
 <button id="go">🚀 MULA TERBANG</button><button id="lbBtn" style="background:linear-gradient(90deg,#b388ff,#ff4081);color:#fff">🏆 Papan Markah</button></div>
 <div id="lb" class="scr hide"><h1>🏆 PAPAN MARKAH</h1><div id="lbt"></div><button id="lbBack">Kembali</button></div>
 
@@ -372,10 +373,10 @@ $('#rn').onclick=()=>{$('#rnd').classList.add('hide');G.lives=Math.min(5,G.lives
 const SHEET_URL='https://script.google.com/macros/s/AKfycbw-_vNWIIo_f4F-w35_Bq5vRSYXeK7Z0W1XMKOjzMtVYBZqRkwbP8Acqj2l4C1vCWerPQ/exec';// <-- TAMPAL URL GOOGLE APPS SCRIPT (Web app) DI SINI
 let P=null;
 $('#go').onclick=()=>{const n=$('#sn').value.trim(),m=$('#sm').value.trim().toUpperCase();const sc=$('#ss').value;if(n.length<3||m.length<4||!sc){$('#err').textContent='Sila masukkan nama penuh, no. matriks dan pilih seksyen.';return}$('#err').textContent='';P={n,m,s:sc};newGame()};
-function saveScore(){if(G.sent)return;G.sent=1;const r={n:P?P.n:'Pemain',s:G.score,p:G.pct,d:new Date().toLocaleDateString('ms-MY')};LB.push(r);LB.sort((a,b)=>b.s-a.s);LB=LB.slice(0,10);try{localStorage.setItem('skyquiz_lb',JSON.stringify(LB))}catch(e){}$('#lbe').innerHTML=lbHtml(r);sendSheet()}
+function saveScore(){if(G.sent)return;G.sent=1;sendSheet()}
 function sendSheet(){const st=$('#sst');if(!SHEET_URL){st.textContent='⚠️ Google Sheet belum disambung (SHEET_URL kosong).';return}
  st.textContent='⏳ Menghantar keputusan...';
- fetch(SHEET_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({nama:P.n,matrik:P.m,seksyen:P.s,markah:G.score,betul:G.ok,jumlah:G.qi<TOTAL?G.qi+1:TOTAL,peratus:G.pct,masa:new Date().toISOString()})}).then(()=>st.textContent='✅ Keputusan telah dihantar kepada pensyarah.').catch(()=>{st.textContent='❌ Gagal hantar. Semak internet dan cuba semula.';$('#rsend').classList.remove('hide')})}
+ fetch(SHEET_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({nama:P.n,matrik:P.m,seksyen:P.s,markah:G.score,betul:G.ok,jumlah:G.qi<TOTAL?G.qi+1:TOTAL,peratus:G.pct,masa:new Date().toISOString()})}).then(()=>{st.textContent='✅ Keputusan telah dihantar kepada pensyarah.';setTimeout(()=>loadLB($('#lbe'),P),1500)}).catch(()=>{st.textContent='❌ Gagal hantar. Semak internet dan cuba semula.';$('#rsend').classList.remove('hide')})}
 $('#rsend').onclick=()=>{$('#rsend').classList.add('hide');sendSheet()};
 const bb=$('#boost');bb.addEventListener('pointerdown',()=>keys['b']=true);['pointerup','pointercancel','pointerleave'].forEach(t=>bb.addEventListener(t,()=>keys['b']=false));
 $('#again').onclick=newGame;
@@ -388,10 +389,11 @@ const jend=e=>{if(e.pointerId===jid){jid=null;jx=jy=0;kn.style.transform=''}};jo
 const fb=$('#fire');fb.addEventListener('pointerdown',()=>{keys[' ']=true;if(running&&G.ammo<=0)toast('🔫 Tiada peluru! Kutip item oren','#ff9100')});['pointerup','pointercancel','pointerleave'].forEach(t=>fb.addEventListener(t,()=>keys[' ']=false));
 $('#pbtn').onclick=()=>{if(running&&!G.rb){paused=!paused;$('#pause').classList.toggle('hide',!paused)}};
 // ====== PAPAN MARKAH (disimpan dalam pelayar peranti ini) ======
-let LB=[];try{LB=JSON.parse(localStorage.getItem('skyquiz_lb')||'[]')}catch(e){}
+try{localStorage.removeItem('skyquiz_lb')}catch(e){}
 const esc=s=>s.replace(/[&<>"]/g,c=>'&#'+c.charCodeAt(0)+';');
-function lbHtml(me){return '<table><tr><th>#</th><th>Nama</th><th>Markah</th><th>%</th><th>Tarikh</th></tr>'+(LB.length?LB.map((r,i)=>`<tr${r===me?' class="me"':''}><td>${['🥇','🥈','🥉'][i]||i+1}</td><td>${esc(r.n)}</td><td>${r.s}</td><td>${r.p}%</td><td>${r.d}</td></tr>`).join(''):'<tr><td colspan=5>Belum ada rekod</td></tr>')+'</table>'}
-$('#sv').onclick=()=>{const r={n:$('#nick').value.trim()||'Pemain',s:G.score,p:G.pct,d:new Date().toLocaleDateString('ms-MY')};LB.push(r);LB.sort((a,b)=>b.s-a.s);LB=LB.slice(0,10);try{localStorage.setItem('skyquiz_lb',JSON.stringify(LB))}catch(e){}$('#nm').classList.add('hide');$('#lbe').innerHTML=lbHtml(r)};
-$('#lbBtn').onclick=()=>{$('#lbt').innerHTML=lbHtml();$('#lb').classList.remove('hide')};$('#lbBack').onclick=()=>$('#lb').classList.add('hide');
+function lbHtml(rows,me){return '<div style="margin:6px 0">🏆 Papan Markah (10 teratas)</div><table><tr><th>#</th><th>Nama</th><th>Sec</th><th>Markah</th><th>%</th></tr>'+(rows&&rows.length?rows.map((r,i)=>`<tr${me&&r.n===me.n&&r.sec===me.s?' class="me"':''}><td>${['🥇','🥈','🥉'][i]||i+1}</td><td>${esc(String(r.n))}</td><td>${esc(String(r.sec||''))}</td><td>${r.s}</td><td>${r.p}%</td></tr>`).join(''):'<tr><td colspan=5>Belum ada rekod</td></tr>')+'</table>'}
+async function loadLB(el,me){el.innerHTML='⏳ Memuatkan papan markah...';if(!SHEET_URL){el.innerHTML='Google Sheet belum disambung.';return}
+ try{const r=await fetch(SHEET_URL+'?action=lb&_='+Date.now());el.innerHTML=lbHtml(await r.json(),me)}catch(e){el.innerHTML='⚠️ Papan markah tidak dapat dimuatkan.'}}
+$('#lbBtn').onclick=()=>{$('#lb').classList.remove('hide');loadLB($('#lbt'))};$('#lbBack').onclick=()=>$('#lb').classList.add('hide');
 requestAnimationFrame(loop);
 </script></body></html>
