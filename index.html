@@ -70,7 +70,7 @@ select{font-size:16px;padding:9px 14px;border-radius:30px;border:1px solid #00e5
 <p>Terbangkan pesawat dan langgar cincin jawapan yang betul. Kutip 🔫 senjata, 🛡️ perisai, ⭐ bonus &amp; ❤️ nyawa. Hati-hati hujan 🌧️ dan petir ⚡ — elak garisan merah!</p>
 <p style="font-size:13px">3 pusingan × 10 soalan (semua 30 soalan keluar sekali, susunan soalan &amp; jawapan diacak). Setiap pusingan lebih sukar!</p>
 <p id="rot">📱 Disyorkan: putar telefon ke mod <b>landscape</b> untuk pengalaman terbaik.</p><div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><input id="sn" maxlength="40" placeholder="Nama penuh" autocomplete="off"><input id="sm" maxlength="14" placeholder="No. Matriks" autocomplete="off"><select id="ss"><option value="">Pilih Seksyen</option><option value="Sec 1">Sec 1</option><option value="Sec 2">Sec 2</option><option value="Sec 3">Sec 3</option><option value="Sec 4">Sec 4</option><option value="Sec 5">Sec 5</option><option value="Sec 6">Sec 6</option></select></div><p id="err" style="color:#ff5252;min-height:1em"></p>
-<div style="opacity:.45;font-size:11px">Versi 5 · papan markah dari Google Sheet</div>
+<div style="opacity:.45;font-size:11px">Versi 6 · papan markah dari Google Sheet</div>
 <button id="go">🚀 MULA TERBANG</button><button id="lbBtn" style="background:linear-gradient(90deg,#b388ff,#ff4081);color:#fff">🏆 Papan Markah</button></div>
 <div id="lb" class="scr hide"><h1>🏆 PAPAN MARKAH</h1><div id="lbt"></div><button id="lbBack">Kembali</button></div>
 
@@ -307,7 +307,7 @@ function resolve(idx){
  hud();if(G.lives<=0){setTimeout(finish,1200);G.wait=99;return}G.wait=2.2;
 }
 function finish(){
- running=false;const pct=Math.round(G.ok/Math.max(1,G.qi<TOTAL?G.qi+1:TOTAL)*100)||0;
+ running=false;const pct=Math.round(G.ok/TOTAL*100)||0;
  G.pct=pct;const gr=pct>=90?'S':pct>=75?'A':pct>=60?'B':'C';
  $('#et').textContent=G.lives>0?'MISI SELESAI 🎉':'PESAWAT TERHEMPAS 💥';
  $('#es').innerHTML=`Markah: <b style="color:#00e5ff">${G.score}</b> · Betul: ${G.ok} · Ketepatan: ${pct}% · Gred: <b>${gr}</b>`;
@@ -376,7 +376,7 @@ $('#go').onclick=()=>{const n=$('#sn').value.trim(),m=$('#sm').value.trim().toUp
 function saveScore(){if(G.sent)return;G.sent=1;sendSheet()}
 function sendSheet(){const st=$('#sst');if(!SHEET_URL){st.textContent='⚠️ Google Sheet belum disambung (SHEET_URL kosong).';return}
  st.textContent='⏳ Menghantar keputusan...';
- fetch(SHEET_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({nama:P.n,matrik:P.m,seksyen:P.s,markah:G.score,betul:G.ok,jumlah:G.qi<TOTAL?G.qi+1:TOTAL,peratus:G.pct,masa:new Date().toISOString()})}).then(()=>{st.textContent='✅ Keputusan telah dihantar kepada pensyarah.';setTimeout(()=>loadLB($('#lbe'),P),1500)}).catch(()=>{st.textContent='❌ Gagal hantar. Semak internet dan cuba semula.';$('#rsend').classList.remove('hide')})}
+ fetch(SHEET_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({nama:P.n,matrik:P.m,seksyen:P.s,markah:G.score,betul:G.ok,jumlah:TOTAL,peratus:G.pct,masa:new Date().toISOString()})}).then(()=>{st.textContent='✅ Keputusan telah dihantar kepada pensyarah.';setTimeout(()=>loadLB($('#lbe'),P),1500)}).catch(()=>{st.textContent='❌ Gagal hantar. Semak internet dan cuba semula.';$('#rsend').classList.remove('hide')})}
 $('#rsend').onclick=()=>{$('#rsend').classList.add('hide');sendSheet()};
 const bb=$('#boost');bb.addEventListener('pointerdown',()=>keys['b']=true);['pointerup','pointercancel','pointerleave'].forEach(t=>bb.addEventListener(t,()=>keys['b']=false));
 $('#again').onclick=newGame;
