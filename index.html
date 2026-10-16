@@ -299,7 +299,7 @@ addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
 $('#resume').onclick=()=>{paused=false;$('#pause').classList.add('hide')};
 $('#rn').onclick=()=>{$('#rnd').classList.add('hide');G.lives=Math.min(5,G.lives+1);G.ans=true;G.wait=.01;paused=false;hud()};
 // ====== DATA PELAJAR + GOOGLE SHEET ======
-const SHEET_URL='';// <-- TAMPAL URL GOOGLE APPS SCRIPT (Web app) DI SINI
+const SHEET_URL='https://script.google.com/macros/s/AKfycbw-_vNWIIo_f4F-w35_Bq5vRSYXeK7Z0W1XMKOjzMtVYBZqRkwbP8Acqj2l4C1vCWerPQ/exec';// <-- TAMPAL URL GOOGLE APPS SCRIPT (Web app) DI SINI
 let P=null;
 $('#go').onclick=()=>{const n=$('#sn').value.trim(),m=$('#sm').value.trim().toUpperCase();if(n.length<3||m.length<4){$('#err').textContent='Sila masukkan nama penuh dan no. matriks.';return}$('#err').textContent='';P={n,m};newGame()};
 function saveScore(){if(G.sent)return;G.sent=1;const r={n:P?P.n:'Pemain',s:G.score,p:G.pct,d:new Date().toLocaleDateString('ms-MY')};LB.push(r);LB.sort((a,b)=>b.s-a.s);LB=LB.slice(0,10);try{localStorage.setItem('skyquiz_lb',JSON.stringify(LB))}catch(e){}$('#lbe').innerHTML=lbHtml(r);sendSheet()}
